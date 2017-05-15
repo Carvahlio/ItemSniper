@@ -8,26 +8,27 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Kurt on 5/6/2017.
+ * Created by carva on 14/5/2017.
  */
-public class LoginRequest extends StringRequest {
 
-    public static String LOGIN_URL = "http://www.topnhotch.com/itemsniper/Login.php";
+public class LoginRequestBusiness extends StringRequest {
+    public static String LOGIN_URL = "http://www.topnhotch.com/itemsniper/LoginBusiness.php";
     private HashMap<String,String> params;
     private String email;
     private String password;
 
-    public LoginRequest(String email,String password,Response.Listener<String> listener, Response.ErrorListener errorListener) {
-        super(Method.POST, LOGIN_URL, listener, errorListener);
-        this.email =  email;
-        this.password = password;
+
+    public LoginRequestBusiness(String email, String password, Response.Listener<String> listener, Response.ErrorListener errorListener) {
+        super(Method.POST,LOGIN_URL, listener, errorListener);
+        this.email=email;
+        this.password=password;
     }
 
     @Override
     protected Map<String, String> getParams() throws AuthFailureError {
         params = new HashMap<>();
         params.put("email",email);
-        params.put("pass",password);
+        params.put("password",password);
         return params;
     }
 }

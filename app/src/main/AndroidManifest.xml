@@ -50,6 +50,11 @@
             android:label="@string/app_name">
         </activity>
 
+        <activity android:name=".ItemActivity"
+            android:theme="@style/NoActionBarAndNoTitle">
+
+        </activity>
+
         <activity android:name=".ConsumerRegisterActivity"
             android:theme="@style/NoActionBarAndNoTitle">
 
@@ -67,7 +72,10 @@
             android:theme="@android:style/Theme.Dialog">
 
         </activity>
+        <activity android:name=".ItemUploadActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
 
+        </activity>
 
     </application>
 

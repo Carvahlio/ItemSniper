@@ -51,25 +51,27 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:background="@color/pictonBlue">
+
+
+        <Button
+            android:id="@+id/previous_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Previous"/>
+
         <Button
             android:id="@+id/map_type_norm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Normal" />
-        <Button
-            android:id="@+id/map_type_hyb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Hybrid" />
+            android:text="Toggle View" />
 
         <Button
-            android:id="@+id/map_type_sate"
+            android:id="@+id/next_result"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Satellite" />
+            android:text="Next"/>
+
     </LinearLayout>
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"
