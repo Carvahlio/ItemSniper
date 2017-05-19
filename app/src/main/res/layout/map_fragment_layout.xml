@@ -27,6 +27,8 @@
                 android:layout_height="50dp"
                 android:layout_marginRight="13dp"
                 android:layout_weight="70"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
                 android:background="@drawable/round_edit_text"
                 android:fontFamily="Droid Sans Mono"
                 android:hint="Snipe An Item"
@@ -36,13 +38,6 @@
                 android:textSize="20dp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/map_search_btn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="30"
-                android:text="Search"
-                android:onClick="onMapSearch"/>
         </LinearLayout>
 
     </android.support.v7.widget.Toolbar>
@@ -52,24 +47,36 @@
         android:orientation="horizontal"
         android:background="@color/pictonBlue">
         <Button
+            android:id="@+id/previous_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/shadowText"
+            android:background="@drawable/round_white_container"
+            android:layout_margin="5dp"
+            android:textColor="@color/pictonBlue"
+            android:text="Previous"/>
+
+        <Button
             android:id="@+id/map_type_norm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            style="@style/shadowText"
+            android:background="@drawable/round_white_container"
+            android:textColor="@color/pictonBlue"
+            android:layout_margin="5dp"
             android:layout_weight="1"
-            android:text="Normal" />
-        <Button
-            android:id="@+id/map_type_hyb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Hybrid" />
+            android:text="Toggle View" />
 
         <Button
-            android:id="@+id/map_type_sate"
+            android:id="@+id/next_result"
             android:layout_width="wrap_content"
+            style="@style/shadowText"
+            android:layout_margin="5dp"
+            android:background="@drawable/round_white_container"
+            android:textColor="@color/pictonBlue"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Satellite" />
+            android:text="Next"/>
+
     </LinearLayout>
     <fragment
         xmlns:android="http://schemas.android.com/apk/res/android"

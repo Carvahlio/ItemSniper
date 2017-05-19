@@ -30,6 +30,7 @@ public class SignInFragment extends Fragment {
 
     //Sign In page on screen buttons
     private Button signIn;
+    private Button signInBusi;
     private Button consumerSignUp;
     private Button businessSignUp;
     private EditText email;
@@ -69,6 +70,7 @@ public class SignInFragment extends Fragment {
 
         //Fetch on screen buttons
         signIn= (Button)view.findViewById(R.id.sign_in_button);
+        signInBusi = (Button) view.findViewById(R.id.sign_in_business_button);
         consumerSignUp = (Button)view.findViewById(R.id.consumer_sign_up);
         businessSignUp = (Button)view.findViewById(R.id.business_sign_up);
 
@@ -123,6 +125,16 @@ public class SignInFragment extends Fragment {
             });
         }
 
+        if(signInBusi != null){
+            signInBusi.setOnClickListener(new View.OnClickListener(){
+
+                @Override
+                public void onClick(View v) {
+                    loginInBusiness();
+                }
+            });
+        }
+
         //Register listener for consumer button
         if(consumerSignUp != null){
 
@@ -147,6 +159,56 @@ public class SignInFragment extends Fragment {
                 }
             });
         }
+    }
+
+    private void loginInBusiness() {
+        Response.Listener<String> listener = new Response.Listener<String>() {
+
+            @Override
+            public void onResponse(String response) {
+                try{
+                    JSONObject o = new JSONObject(response);
+                    if(o.getBoolean("success") && o.getJSONArray("rows").length() > 0){
+
+
+                        Log.i("Response",response);
+
+                        //The username and passwords match
+                        SharedPreferences.Editor preferences = getActivity().getSharedPreferences("businessLogin", Context.MODE_PRIVATE).edit();
+                        JSONObject vendor = o.getJSONArray("rows").getJSONObject(0);
+                        preferences.putString("email",vendor.getString("email"));
+                        preferences.putString("name", vendor.getString("name"));
+                        //preferences.putString("lastName", vendor.getString("LName"));
+                        preferences.putBoolean("loggedIn", true);
+                        preferences.apply();
+
+                        loadUserData();
+
+
+
+                    }else{
+                        Toast.makeText(getContext(),"Invalid Login",Toast.LENGTH_LONG).show();
+
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Response.ErrorListener errorListener = new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        };
+
+        RequestQueue queue = Volley.newRequestQueue(getContext());
+
+        String enteredEmail = email.getText().toString();
+        String enteredPass = password.getText().toString();
+        LoginRequestBusiness login = new LoginRequestBusiness(enteredEmail,enteredPass,listener,errorListener);
+        queue.add(login);
     }
 
     //Do this when the sign in button is clicked
@@ -175,7 +237,7 @@ public class SignInFragment extends Fragment {
                         preferences.putString("firstName", user.getString("FName"));
                         preferences.putString("lastName", user.getString("LName"));
                         preferences.putBoolean("loggedIn", true);
-                        preferences.commit();
+                        preferences.apply();
 
                         loadUserData();
 

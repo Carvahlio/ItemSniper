@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    android:layout_height="match_parent"
+    android:paddingLeft="15dp">
+
+    <TextView
+        android:id="@+id/itemText"
+        style="@style/shadowText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Upload items"
+        android:textColor="@color/pictonBlue"
+        android:textSize="16dp" />
+
+    <TextView
+        style="@style/shadowText"
+        android:textSize="12dp"
+        android:text="Please Select files"
+        android:textColor="@color/lynchgray"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"/>
+    <GridView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:columnWidth="100dp"
+        android:gravity="center"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="10dp"
+        android:id="@+id/grid">
+    </GridView>
+    <Button
+        android:text="Upload"
+        style="@style/shadowText"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:paddingRight="10dp"
+        android:background="@drawable/blue_button"
+        android:layout_width="300dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/buttonUpload"/>
+</LinearLayout>

@@ -1,6 +1,8 @@
 package project.major.itemsniper;
 
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -11,12 +13,17 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -35,6 +42,8 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.ClusterRenderer;
 
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,6 +53,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import project.major.itemsniper.Reusables.PopUp;
+
 /**
  * Created by carva on 5/5/2017.
  */
@@ -51,7 +62,7 @@ import java.util.List;
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback,ClusterManager.OnClusterItemInfoWindowClickListener<MyItem>,
         GoogleApiClient.ConnectionCallbacks,
 GoogleApiClient.OnConnectionFailedListener,
-        LocationListener{
+        LocationListener,Response.Listener<String>,Response.ErrorListener{
 
     public static GoogleMap mMap;
     private ClusterManager<MyItem> mClusterManager;
@@ -59,6 +70,7 @@ GoogleApiClient.OnConnectionFailedListener,
     LocationRequest mLocationRequest;
     Location mLastLocation;
     Marker mCurrLocationMarker;
+    MarkerOptions markerOptions;
     ArrayList<LatLng> MarkerPoints;
     Button mapNorm;
     Button mapHybrid;
@@ -67,21 +79,45 @@ GoogleApiClient.OnConnectionFailedListener,
     public static Polyline polyLine;
     //LatLng uTech = new LatLng(18.018624,-76.744458);
 
+////////////////////////////ADDED STUFF
+    ArrayList<Item> currentItemResults = new ArrayList<>();
+    private String query;
+    private int MAP_TYPE = 1;
+    private  Button toggle;
+    private Button next;
+    private Button previous;
+    private int pos = 0;
+    private EditText search;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.map_fragment_layout);
         final SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-    }
 
+    }
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        search = (EditText)findViewById(R.id.map_search);
+        search.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+
+                Log.i("SEARCH:", "Search Clicked");
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    onMapSearch(v);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         setMapType();
+        setNextAndPrev();
 
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             if(ContextCompat.checkSelfPermission(this,
@@ -97,36 +133,97 @@ GoogleApiClient.OnConnectionFailedListener,
             buildGoogleAPiCLIENT();
             mMap.setMyLocationEnabled(true);
         }
+
+        String query = getIntent().getStringExtra("query");
+        if(query != null && query.equalsIgnoreCase(" ") && query.equalsIgnoreCase("")){
+            Search.searchForItem(query, this, this, getApplicationContext());
+        }
+    }
+
+
+    private void next(){
+
+            if(currentItemResults != null && pos <= currentItemResults.size()-1){
+                Item x = currentItemResults.get(pos);
+                double lat = x.getLatitude();
+                double longi = x.getLongitude();
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, longi)));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                if(pos == currentItemResults.size()-1){
+
+                }else{
+                    pos++;
+                }
+
+            }else{
+                Toast.makeText(getApplicationContext(),"No more results",Toast.LENGTH_LONG).show();
+            }
+    }
+
+    private void prev() {
+
+        if (currentItemResults != null && pos >= 0) {
+
+            Item x = currentItemResults.get(pos);
+            double lat = x.getLatitude();
+            double longi = x.getLongitude();
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(lat, longi)));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+            if(pos == 0){
+
+            }else{
+                pos--;
+            }
+
+        } else {
+            Toast.makeText(getApplicationContext(), "No more results", Toast.LENGTH_LONG).show();
+        }
+
+    }
+    private void setNextAndPrev(){
+        this.next = (Button)findViewById(R.id.next_result);
+        this.next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                next();
+            }
+        });
+        this.previous = (Button)findViewById(R.id.previous_result);
+        this.previous.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                prev();
+            }
+        });
     }
 
     private void setMapType(){
-        mapNorm = (Button) findViewById(R.id.map_type_norm);
-        mapNorm.setOnClickListener(new Button.OnClickListener(){
 
+        Button toggle = (Button)findViewById(R.id.map_type_norm);
+        toggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                Toast.makeText(MapActivity.this, "Map type changed: Normal",Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        mapHybrid = (Button) findViewById(R.id.map_type_hyb);
-        mapHybrid.setOnClickListener(new Button.OnClickListener(){
+                MAP_TYPE++;
 
-            @Override
-            public void onClick(View v) {
-                mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                Toast.makeText(MapActivity.this, "Map type changed: Hybrid",Toast.LENGTH_SHORT).show();
-            }
-        });
+                if (MAP_TYPE > 3) {
+                    MAP_TYPE = 1;
+                }
 
-        mapSatellite = (Button) findViewById(R.id.map_type_sate);
-        mapSatellite.setOnClickListener(new Button.OnClickListener(){
-
-            @Override
-            public void onClick(View v) {
-                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-                Toast.makeText(MapActivity.this, "Map type changed: Satellite",Toast.LENGTH_SHORT).show();
+                switch (MAP_TYPE) {
+                    case 1: {
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        break;
+                    }
+                    case 2: {
+                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                        break;
+                    }
+                    case 3: {
+                        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                        break;
+                    }
+                }
             }
         });
     }
@@ -134,43 +231,29 @@ GoogleApiClient.OnConnectionFailedListener,
     public void onMapSearch(View view){
         EditText locat = (EditText) findViewById(R.id.map_search);
         String location = locat.getText().toString();
+
+        String item = location;//treat it as an item query
+
         List<Address> addressList = null;
 
-        populateMap();
+        //Issue query to the server to search the database for items that match
+        Search.searchForItem(item, this, this, getApplicationContext());
+    }
 
-        if(!location.equals("")){
-            Geocoder geocoder = new Geocoder(this);
-            try{
-                addressList = geocoder.getFromLocationName(location,1);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if(addressList != null) {
-                Address address = addressList.get(0);
-                LatLng latlng = new LatLng(address.getLatitude(), address.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(latlng).title("marker"));
-                mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng));
-            }
-            else{
-                Toast.makeText(this,"nothing retrieved",Toast.LENGTH_SHORT).show();
-            }
-
-            //mMap.animateCamera(CameraUpdateFactory.newLatLng(latlng));
-        }else
-        {
-            Toast.makeText(this,"No location to display",Toast.LENGTH_SHORT).show();
-        }
+    private void  calculatePaths(){
     }
 
     private void populateMap() {
         //Instantiate cluster manager
         mClusterManager = new ClusterManager<>(MapActivity.this,mMap);
-
         //Instantiate custom cluster renderer
         final ClusterRenderer<MyItem> renderer = new CustomClusterRenderer(this, mMap, mClusterManager);
 
         //Assign custom renderer to cluster manager
         mClusterManager.setRenderer(renderer);
+
+        //When a cluster item is long clicked
+
 
         //Set an Onclick method for markers
         mClusterManager
@@ -179,35 +262,43 @@ GoogleApiClient.OnConnectionFailedListener,
                             @Override
                             public boolean onClusterItemClick(MyItem myItem) {
                                 Toast.makeText(MapActivity.this, "Cluster item click", Toast.LENGTH_SHORT).show();
-                                if(polyLine != null){
+
+                                if (polyLine != null) {
                                     polyLine.remove();
                                 }
-                                    MarkerPoints = new ArrayList<>();
-                                    MarkerPoints.add(mCurrLocationMarker.getPosition());
-                                    if (MarkerPoints.size() >= 1) {
+                                MarkerPoints = new ArrayList<>();
+                                MarkerPoints.add(mCurrLocationMarker.getPosition());
+                                if (MarkerPoints.size() >= 1) {
 
 
-                                        MarkerPoints.add(myItem.getPosition());
+                                    MarkerPoints.add(myItem.getPosition());
 
-                                        LatLng origin = mCurrLocationMarker.getPosition();
-                                        LatLng dest = myItem.getPosition();
+                                    LatLng origin = mCurrLocationMarker.getPosition();
+                                    LatLng dest = myItem.getPosition();
 
-                                        String url = getUrl(origin, dest);
-                                        Log.d("onMarkerClick", url);
-                                        FetchUrl FetchUrl = new FetchUrl();
+                                    String url = getUrl(origin, dest);
+                                    Log.d("onMarkerClick", url);
+                                    FetchUrl FetchUrl = new FetchUrl();
 
-                                        FetchUrl.execute(url);
+                                    FetchUrl.execute(url);
 
 
-                                        mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
-                                        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-                                    }
-                                    else
-                                    {
-                                        Toast.makeText(MapActivity.this,"Current location not accessible, please enable location permissions", Toast.LENGTH_SHORT).show();
-                                    }
-                                    return false;
+                                    mMap.moveCamera(CameraUpdateFactory.newLatLng(origin));
+                                    mMap.animateCamera(CameraUpdateFactory.zoomTo(60));
+
+
+                                    //Get the distance between points
+                                    float results[] = new float[1];
+                                    Location.distanceBetween(mLastLocation.getLatitude(), mLastLocation.getLongitude(),
+                                            dest.latitude, dest.longitude, results);
+                                    Toast.makeText(MapActivity.this, "Distance is " + results[0], Toast.LENGTH_LONG).show();
+
+
+                                } else {
+                                    Toast.makeText(MapActivity.this, "Current location not accessible, please enable location permissions", Toast.LENGTH_SHORT).show();
                                 }
+                                return false;
+                            }
                         }
                 );
 
@@ -230,13 +321,43 @@ GoogleApiClient.OnConnectionFailedListener,
        //sets
         mMap.setInfoWindowAdapter(mClusterManager.getMarkerManager());
 
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                try{
+                    Item x = CustomInfoWindowAdapter.matchImage(marker,currentItemResults);
+
+                    Intent i = new Intent(getApplicationContext(),ItemActivity.class);
+                    i.putExtra("name",x.getName());
+                    i.putExtra("description",x.getDescription());
+                    i.putExtra("url",x.getImageUrl());
+                    i.putExtra("category",x.getCategory());
+                    i.putExtra("distributed_by",x.getDistributedBy());
+                    i.putExtra("vendor_id",x.getVendorId());
+                    i.putExtra("price",x.getPrice());
+                    i.putExtra("id",x.getId());
+                    startActivity(i);
+
+                }catch (Exception e){
+                    Log.i("Item","null");
+                    e.printStackTrace();
+                }
+
+            }
+        });
+
         //set all visible cluster item markers' info adapters to custom info window adapter
+        Log.i("CREATING:", "new one");
         mClusterManager.getMarkerCollection().setOnInfoWindowAdapter(
-             new CustomInfoWindowAdapter(LayoutInflater.from(this)));
+                new CustomInfoWindowAdapter(LayoutInflater.from(this), currentItemResults));
+
+
 
 
         //Add locations to map
-        addItems();
+       addItems();
+
+
 
         //reclusters once items are added
         mClusterManager.cluster();
@@ -254,46 +375,38 @@ GoogleApiClient.OnConnectionFailedListener,
 
     //Method to add locations to map
      private void addItems() {
-        double lat = 18.018624;
-        double lng = -76.744458;
-
-         //Test locations
-        for(int i =0; i< 10; i++){
-
-            double offset = i / 60d;
-            lat = lat + offset;
-            lng = lng + offset;
-            MyItem offsetItem = new MyItem(lat,lng,"title " + i+1, "avalability " + i+1);
-            mClusterManager.addItem(offsetItem);
-            //stuff.a(offsetItem);
-
-        }
-
-        //Test locations
-        MyItem sumn = new MyItem(17.987836,-76.838338, "bap","Yes");
-        mClusterManager.addItem(sumn);
-
-         MyItem sumn2 = new MyItem(17.998459, -76.865199,"sumweh","No");
-         mClusterManager.addItem(sumn2);
-
-         MyItem sumn3 = new MyItem(18.160129, -77.066871, "HAHA","NO");
-         mClusterManager.addItem(sumn3);
-
-         MyItem sumn4 = new MyItem(18.140616, -77.029817, "UP","YES");
-         mClusterManager.addItem(sumn4);
-
-        MyItem sumn5 = new MyItem(18.149231, -77.042978,"YUSH","NO");
-         mClusterManager.addItem(sumn5);
-
-         MyItem sumn6 = new MyItem(18.160985, -77.071120,"Zaga","YES");
-         mClusterManager.addItem(sumn6);
-
-         MyItem sumn7 = new MyItem(18.165990, -77.072375,"Another one","YES");
-         mClusterManager.addItem(sumn7);
+         mMap.clear();
+         mClusterManager.clearItems();
+         mCurrLocationMarker = mMap.addMarker(markerOptions);
+         for(Item x : currentItemResults){
+             mClusterManager.addItem(new MyItem(x.getLatitude(),x.getLongitude(),x.getName(),"YES"));
+         }
     }
 
     @Override
     public void onClusterItemInfoWindowClick(MyItem myItem) {
+
+        Toast.makeText(getApplicationContext(),"WTF",Toast.LENGTH_LONG).show();
+
+        try{
+            Item x = CustomInfoWindowAdapter.matchImage(myItem,currentItemResults);
+
+            Intent i = new Intent(getApplicationContext(),ItemActivity.class);
+            i.putExtra("name",x.getName());
+            i.putExtra("description",x.getDescription());
+            i.putExtra("url",x.getImageUrl());
+            i.putExtra("category",x.getCategory());
+            i.putExtra("distributed_by",x.getDistributedBy());
+            i.putExtra("vendor_id",x.getVendorId());
+            i.putExtra("price",x.getPrice());
+            i.putExtra("id",x.getId());
+            startActivity(i);
+
+        }catch (Exception e){
+            Log.i("Item","null");
+            e.printStackTrace();
+        }
+
 
     }
 
@@ -378,16 +491,18 @@ GoogleApiClient.OnConnectionFailedListener,
 
         //Place current location marker
         LatLng latlng = new LatLng(location.getLatitude(),location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions = new MarkerOptions();
         markerOptions.position(latlng);
         markerOptions.title("Current Position");
         markerOptions.snippet("   You are here");
         markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
         mCurrLocationMarker = mMap.addMarker(markerOptions);
 
+
+
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latlng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+       mMap.animateCamera(CameraUpdateFactory.zoomTo(8));
 
         //stop location updates
         if(mGoogleApiClient != null){
@@ -462,4 +577,66 @@ GoogleApiClient.OnConnectionFailedListener,
     }
 
 
+
+////////////////////////////////////////////////////////////////////////////////////////////
+
+    //WHEN THE DATA COMES BACK FROM THE SERVER
+
+
+    //Error
+    @Override
+    public void onErrorResponse(VolleyError error) {
+        PopUp.Manipulator m = new PopUp.Manipulator() {
+            @Override
+            public void manipulate(View v) {
+                TextView t = (TextView)v.findViewById(R.id.result_text);
+
+                if(t == null){
+                    Log.i("Null","view null");
+                }else{
+                    t.setText("Please check your internet connection");
+                }
+            }
+        };
+        PopUp p = PopUp.createInstance(R.layout.map_results_layout,m,true);
+        p.show(getSupportFragmentManager(),"results");
+        error.printStackTrace();
+    }
+
+    //Response from server with the rows
+    @Override
+    public void onResponse(String response) {
+
+        //Query comes back from the server
+        try{
+            JSONObject o = new JSONObject(response);
+            Log.i("repsonse",response);
+            boolean result = o.getBoolean("success");
+
+            if(result){
+                currentItemResults = new ArrayList<Item>();
+                currentItemResults = QueryParser.parseItemResults(response,getApplicationContext());
+                populateMap();
+                PopUp.Manipulator m = new PopUp.Manipulator() {
+                    @Override
+                    public void manipulate(View v) {
+                        TextView t = (TextView)v.findViewById(R.id.result_text);
+
+                        if(t == null){
+                            Log.i("Null","view null");
+                        }else{
+                            t.setText("We found "+currentItemResults.size()+ " results for you");
+                        }
+                    }
+                };
+                PopUp p = PopUp.createInstance(R.layout.map_results_layout,m,true);
+                p.show(getSupportFragmentManager(),"results");
+            }else{
+                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+            }
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 }

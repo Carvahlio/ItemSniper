@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@drawable/round_white_container"
+    android:padding="10dp"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/comment_field"
+        style="@style/shadowText"
+        android:textColor="@color/pictonBlue"
+        android:background="@drawable/round_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+
+    <Button
+        android:layout_marginTop="10dp"
+        android:text="Submit"
+        android:id="@+id/submit_comment"
+        android:background="@drawable/blue_button"
+        style="@style/shadowText"
+        android:padding="2dp"
+        android:textColor="@color/white"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

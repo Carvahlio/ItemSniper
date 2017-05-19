@@ -20,8 +20,12 @@ public class CustomPagerAdapter extends FragmentPagerAdapter {
 
     public void addFragment(Fragment f){
         fragments.add(f);
+        notifyDataSetChanged();
     }
-
+    public void setDataSource(ArrayList<Fragment> fragments){
+        this.fragments = fragments;
+        notifyDataSetChanged();
+    }
     public void removeFragment(Fragment f){
         fragments.remove(f);
     }

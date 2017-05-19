@@ -1,6 +1,7 @@
 package project.major.itemsniper;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -9,61 +10,61 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import net.gotev.uploadservice.MultipartUploadRequest;
 import net.gotev.uploadservice.UploadNotificationConfig;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
- * Created by Kurt on 5/6/2017.
+ * Created by carva on 15/5/2017.
  */
-public class UploadPictureActivity extends AppCompatActivity implements View.OnClickListener{
 
+public class ItemUploadActivity extends AppCompatActivity implements View.OnClickListener {
 
+    GridView grid;
     private Button buttonSelect, buttonUpload;
     private ImageView imageView;
-    private EditText editText;
-    private Button nextButton;
+    private EditText editText, editText2;
+
 
     private static final int STORAGE_PERMISSION_CODE = 2342;
     private static final int PICK_IMAGE_REQUEST = 22;
 
+    private static final String UPLOAD_URL = "http://www.topnhotch.com/itemsniper/uploadVendor.php";
+
     private Uri filePath;
     private Bitmap bitmap;
 
-    private static final String UPLOAD_URL = "http://www.topnhotch.com/itemsniper/uploadVendor.php";
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.file_upload_layout);
+        setContentView(R.layout.file_upload_business);
 
         requestStoragePermission();
-
         buttonUpload = (Button) findViewById(R.id.buttonUpload);
-        buttonSelect = (Button) findViewById(R.id.buttonSelect);
 
-        imageView = (ImageView) findViewById(R.id.image);
-        editText = (EditText) findViewById(R.id.picName) ;
+        CustomGrid adapter = new CustomGrid(ItemUploadActivity.this);
+        grid = (GridView) findViewById(R.id.grid);
+        grid.setAdapter(adapter);
+        grid.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
-        buttonUpload.setOnClickListener(this);
-        buttonSelect.setOnClickListener(this);
-
-        nextButton = (Button)findViewById(R.id.next_button);
-        nextButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent i = new Intent(getApplicationContext(),BusinessProfileActivity.class);
-                startActivity(i);
             }
         });
     }
@@ -77,12 +78,6 @@ public class UploadPictureActivity extends AppCompatActivity implements View.OnC
                 Manifest.permission.READ_EXTERNAL_STORAGE}, STORAGE_PERMISSION_CODE);
     }
 
-    public void next(){
-
-        Intent i = new Intent(getApplicationContext(),BusinessProfileActivity.class);
-        startActivity(i);
-    }
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == STORAGE_PERMISSION_CODE){
@@ -94,7 +89,7 @@ public class UploadPictureActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    private void showFileChooser(){
+    public void showFileChooser(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
@@ -141,23 +136,19 @@ public class UploadPictureActivity extends AppCompatActivity implements View.OnC
         try{
             String uploadId = UUID.randomUUID().toString();
             new MultipartUploadRequest(this,uploadId, UPLOAD_URL)
-                .addFileToUpload(path,"image")
-                .addParameter("name",name)
-                .setNotificationConfig(new UploadNotificationConfig())
-                .setMaxRetries(2)
-                .startUpload();
+                    .addFileToUpload(path,"image")
+                    .addParameter("name",name)
+                    .setNotificationConfig(new UploadNotificationConfig())
+                    .setMaxRetries(2)
+                    .startUpload();
         }catch (Exception e){
 
-            Intent i = new Intent(getApplicationContext(),BusinessProfileActivity.class);
-            startActivity(i);
         }
     }
+
     @Override
     public void onClick(View v) {
-        if(v == buttonSelect){
-            showFileChooser();
-        }
-
+        Toast.makeText(ItemUploadActivity.this, "You dat" ,Toast.LENGTH_SHORT).show();
         if(v == buttonUpload){
             uploadImage();
         }

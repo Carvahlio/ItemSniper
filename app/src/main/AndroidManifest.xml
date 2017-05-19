@@ -28,6 +28,22 @@
 
         </activity>
 
+        <activity android:name=".BusinessRegisterActivity">
+
+        </activity>
+
+        <activity android:name=".UploadPictureActivity">
+
+        </activity>
+
+        <activity android:name=".LocationPickerActivity">
+
+        </activity>
+
+        <activity android:name=".BusinessProfileActivity">
+
+        </activity>
+
     <meta-data
     android:name="com.google.android.geo.API_KEY"
     android:value="@string/google_maps_key"/>
@@ -50,24 +66,15 @@
             android:label="@string/app_name">
         </activity>
 
+        <activity android:name=".ItemActivity"
+            android:theme="@style/NoActionBarAndNoTitle">
+
+        </activity>
+
         <activity android:name=".ConsumerRegisterActivity"
             android:theme="@style/NoActionBarAndNoTitle">
 
         </activity>
-        <activity android:name=".BusinessRegisterActivity"
-            android:theme="@style/NoActionBarAndNoTitle">
-
-        </activity>
-
-        <activity android:name=".UploadPictureActivity"
-            android:theme="@style/NoActionBarAndNoTitle">
-
-        </activity>
-        <activity android:name=".LocationPickerActivity"
-            android:theme="@android:style/Theme.Dialog">
-
-        </activity>
-
 
     </application>
 

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:src="@drawable/defaultprofile"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:id="@+id/grid_image"/>
+
+    <EditText
+        android:layout_width="100dp"
+        android:id="@+id/item_upload_name"
+        android:textColor="@color/pictonBlue"
+        android:background="@drawable/text_field"
+        android:textColorHint="@color/silverGray"
+        android:hint="Product Name"
+        android:layout_height="40dp" />
+    <EditText
+        android:layout_width="100dp"
+        android:hint="Product Price"
+        android:textColor="@color/pictonBlue"
+        android:inputType="numberDecimal"
+        android:textColorHint="@color/silverGray"
+        android:background="@drawable/text_field"
+        android:id="@+id/item_upload_price"
+        android:layout_height="40dp" />
+
+    <Button
+        android:text="Select File"
+        style="@style/shadowText"
+        android:textStyle="bold"
+        android:background="@drawable/green_button"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/selectBtn"/>
+
+
+</LinearLayout>

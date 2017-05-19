@@ -32,6 +32,8 @@
         <item name="android:layout_margin">10dp</item>
     </style>
 
+
+
     <style name="shadowText">
         <item name="android:shadowRadius">2</item>
         <item name="android:shadowDx">1</item>

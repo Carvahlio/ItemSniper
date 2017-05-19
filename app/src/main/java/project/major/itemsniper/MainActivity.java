@@ -1,5 +1,6 @@
 package project.major.itemsniper;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.NavigationView;
@@ -101,7 +102,9 @@ public class MainActivity extends AppCompatActivity {
                 Log.i("SEARCH:", "Search Clicked");
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {
                     Log.i("SEARCH:", "Attempting search......");
-                    searchForItem(Search.getText().toString());
+                    Intent i = new Intent(getApplicationContext(),MapActivity.class);
+                    i.putExtra("query",Search.getText().toString());
+                    startActivity(i);
                     return true;
                 }
                 return false;
@@ -110,49 +113,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    ///////!!!!!THIS IS WHERE THE ACTUAL SEARCHING IS DONE!!!!
-    private void searchForItem(String query){
 
-        Log.i("SEARCH:","Preparing search.....");
-
-        Response.Listener listener = new Response.Listener<String>() {
-
-            @Override
-            public void onResponse(String response) {
-                //Query comes back from the server
-                try{
-                    JSONObject o = new JSONObject(response);
-                    boolean result = o.getBoolean("success");
-
-                    if(result){
-                        Intent i = new Intent(getApplicationContext(),MapActivity.class);
-                        startActivity(i);
-                    }else{
-                        Toast.makeText(getApplicationContext(),"Something went wrong", Toast.LENGTH_LONG).show();
-                    }
-
-                }catch(Exception e){
-                    e.printStackTrace();
-                }
-            }
-        };
-
-        Response.ErrorListener errorListener = new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-                error.printStackTrace();
-            }
-        };
-        HashMap params = new HashMap<String,String>();
-        params.put("query",query);
-        //Create an item request
-        ItemRequest getItem = new ItemRequest(params,listener,errorListener);
-
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-        queue.add(getItem);
-        Log.i("SEARCH:", "Searching please wait for response.....");
-    }
 
     private void initializePager(){
 

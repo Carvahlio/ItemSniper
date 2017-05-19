@@ -23,21 +23,33 @@
         android:background="@color/pictonBlue">
         <Button
             android:id="@+id/locat_type_norm"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            style="@style/shadowText"
+            android:background="@drawable/round_white_container"
+            android:layout_margin="5dp"
             android:layout_weight="1"
+            android:textColor="@color/pictonBlue"
             android:text="Normal" />
         <Button
             android:id="@+id/locat_type_hyb"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            style="@style/shadowText"
+            android:background="@drawable/round_white_container"
+            android:layout_margin="5dp"
+            android:textColor="@color/pictonBlue"
             android:layout_weight="1"
             android:text="Hybrid" />
 
         <Button
             android:id="@+id/locat_type_sate"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            style="@style/shadowText"
+            android:background="@drawable/round_white_container"
+            android:layout_margin="5dp"
+            android:textColor="@color/pictonBlue"
             android:layout_weight="1"
             android:text="Satellite" />
     </LinearLayout>
@@ -69,12 +81,18 @@
             android:textColor="@color/lynchgray"
             android:textColorHint="@color/silverGray"
             android:textSize="20dp"
+            android:layout_weight="1"
             android:textStyle="bold" />
 
             <Button
                 android:id="@+id/submitBtn"
                 android:layout_width="70dp"
                 android:layout_height="wrap_content"
+                style="@style/shadowText"
+                android:background="@drawable/round_white_container"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:textColor="@color/pictonBlue"
                 android:text="Submit" />
         </LinearLayout>
         </fragment>
@@ -86,6 +104,8 @@
         android:layout_width="match_parent"
         android:layout_height="36dp"
         android:text="Cancel"
-        android:layout_alignParentBottom="true"/>
+        android:layout_alignParentBottom="true"
+            style="@style/shadowText"
+            android:background="@drawable/round_white_container"/>
     </RelativeLayout>
 </LinearLayout>

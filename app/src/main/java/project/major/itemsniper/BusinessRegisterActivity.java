@@ -1,8 +1,9 @@
 package project.major.itemsniper;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -17,11 +18,27 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import project.major.itemsniper.LocationPickerActivity;
+
 /**
  * Created by carva on 12/5/2017.
  */
             //Will change what this extends. Custom register for business needed.
-public class BusinessRegisterActivity extends RegisterActivity{
+public class BusinessRegisterActivity extends RegisterActivity {
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if(requestCode == PICK_COORDINATE ){
+
+            if (resultCode == RESULT_OK) {
+
+                this.latitude.setText(data.getStringExtra("lat"));
+                this.longitude.setText(data.getStringExtra("lng"));
+            }
+        }
+    }
 
     //Buttons
     private Button nextButton;
@@ -34,6 +51,9 @@ public class BusinessRegisterActivity extends RegisterActivity{
     private EditText email;
     private EditText pass;
     private EditText confirmPass;
+    private EditText desc;
+
+    public static final int PICK_COORDINATE = 1;
 
     ArrayList<EditText> fields;
 
@@ -66,14 +86,23 @@ public class BusinessRegisterActivity extends RegisterActivity{
             public void onClick(View v) {
                 Intent busi = new Intent(v.getContext(),LocationPickerActivity.class);
                 //Toast.makeText(getContext(),"business clicked", Toast.LENGTH_LONG).show();
-                startActivity(busi);
+                startActivityForResult(busi,PICK_COORDINATE);
 
             }
         });
         longitude = (EditText) findViewById(R.id.business_longitude);
+        longitude.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(v.getContext(),LocationPickerActivity.class);
+                startActivityForResult(intent,PICK_COORDINATE);
+            }
+        });
         email = (EditText)findViewById(R.id.business_email_field);
         pass = (EditText)findViewById(R.id.business_password_field);
         confirmPass = (EditText)findViewById(R.id.confirm_business_password_field);
+        desc = (EditText)findViewById(R.id.business_desc_field);
 
 
         addFieldsToList();
@@ -83,6 +112,7 @@ public class BusinessRegisterActivity extends RegisterActivity{
 
         if(fields != null){
             fields.add(businessName);
+            fields.add(desc);
             fields.add(category);
             fields.add(latitude);
             fields.add(longitude);
@@ -109,16 +139,19 @@ public class BusinessRegisterActivity extends RegisterActivity{
     }
 
     private void onNextButtonClicked() {
-
+        Intent i = new Intent(getApplicationContext(),UploadPictureActivity.class);
+        startActivity(i);
         if(clientSideValidate()){
             //Prepare post parameters
             HashMap<String,String> params = new HashMap<>();
-            params.put("businessName",businessName.getText().toString());
-            params.put("category",category.getText().toString());
-            params.put("latitude",latitude.getText().toString());
-            params.put("longitude",longitude.getText().toString());
-            params.put("email",email.getText().toString());
-            params.put("pass",pass.getText().toString());
+            params.put("n",businessName.getText().toString());
+            params.put("c",category.getText().toString());
+            params.put("d",desc.getText().toString());
+            params.put("lat",latitude.getText().toString());
+            params.put("lng",longitude.getText().toString());
+            params.put("e",email.getText().toString());
+            params.put("p",pass.getText().toString());
+            params.put("forbus","true");
 
             findViewById(R.id.loadingPanel_business).setVisibility(View.VISIBLE);
 

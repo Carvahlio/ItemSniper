@@ -1,121 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:background="@color/white"
-    android:padding="5dp">
-
-    <ImageView
-        android:src="@drawable/notepad"
-        android:layout_width="60dp"
-        android:layout_height="60dp" />
-
-    <TextView
-        android:id="@+id/business_register_title"
-        style="@style/shadowText"
-        android:textSize="30dp"
-        android:textStyle="bold"
-        android:textColor="@color/pictonBlue"
-        android:text="@string/business_register_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
+    android:id="@+id/image_view_parent"
+    android:padding="0dp">
     <LinearLayout
-        android:id="@+id/business_register_form"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="450dp">
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="@color/white"
+        android:padding="5dp">
 
+        <ImageView
+            android:src="@drawable/notepad"
+            android:layout_width="60dp"
+            android:layout_height="60dp" />
 
-        <EditText
-            android:id="@+id/business_name_field"
-            style="@style/sniperTextField"
-            android:hint="Business Name"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/business_category_field"
-            style="@style/sniperTextField"
-            android:hint="Category"
-            android:layout_weight="1"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/business_register_title"
+            style="@style/shadowText"
+            android:textSize="30dp"
+            android:textStyle="bold"
+            android:textColor="@color/pictonBlue"
+            android:text="@string/business_register_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
         <LinearLayout
-            android:id="@+id/yaga"
-            android:orientation="horizontal"
+            android:id="@+id/business_register_form"
+            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="500dp">
+
 
             <EditText
-                android:id="@+id/business_latitude"
+                android:id="@+id/business_name_field"
                 style="@style/sniperTextField"
-                android:hint="Latitude"
-                android:focusable="false"
+                android:hint="Business Name"
                 android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/business_category_field"
+                style="@style/sniperTextField"
+                android:hint="Category"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/business_desc_field"
+                style="@style/sniperTextField"
+                android:hint="Description"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:id="@+id/yaga"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/business_latitude"
+                    style="@style/sniperTextField"
+                    android:hint="Latitude"
+                    android:inputType="numberDecimal"
+                    android:focusable="false"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+                <EditText
+                    android:id="@+id/business_longitude"
+                    style="@style/sniperTextField"
+                    android:hint="Longitude"
+                    android:focusable="false"
+                    android:inputType="numberDecimal"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/business_email_field"
+                style="@style/sniperTextField"
+                android:hint="Email Address"
+                android:inputType="textEmailAddress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
             <EditText
-                android:id="@+id/business_longitude"
+                android:id="@+id/business_password_field"
                 style="@style/sniperTextField"
-                android:hint="Longitude"
-                android:layout_weight="1"
+                android:inputType="textPassword"
+                android:hint="@string/password"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content" />
+
+            <EditText
+                android:id="@+id/confirm_business_password_field"
+                style="@style/sniperTextField"
+                android:inputType="textPassword"
+                android:hint="@string/password_confirmation"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/business_next_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:background="@drawable/green_button"
+                android:text="@string/next_text"
+                android:textColor="@color/white"
+                android:textSize="16dp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <EditText
-            android:id="@+id/business_email_field"
-            style="@style/sniperTextField"
-            android:hint="Email Address"
-            android:inputType="textEmailAddress"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-
-        <EditText
-            android:id="@+id/business_password_field"
-            style="@style/sniperTextField"
-            android:inputType="textPassword"
-            android:hint="@string/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <EditText
-            android:id="@+id/confirm_business_password_field"
-            style="@style/sniperTextField"
-            android:inputType="textPassword"
-            android:hint="@string/password_confirmation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/business_next_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:background="@drawable/green_button"
-            android:text="@string/next_text"
-            android:textColor="@color/white"
-            android:textSize="16dp"
-            android:textStyle="bold" />
-    </LinearLayout>
-
-    <RelativeLayout
-        android:id="@+id/loadingPanel_business"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:visibility="gone">
-
-        <ProgressBar
+        <RelativeLayout
+            android:id="@+id/loadingPanel_business"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:indeterminate="true" />
-    </RelativeLayout>
+            android:gravity="center"
+            android:visibility="gone">
 
-</LinearLayout>
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</ScrollView>
